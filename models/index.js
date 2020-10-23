@@ -2,7 +2,6 @@ const User = require('./user');
 const Vehicle = require('./vehicle');
 const VehicleType = require('./vehicle-type');
 const Rental = require('./rental');
-const sequelize = require('../services/sequelize');
 
 Vehicle.belongsTo(VehicleType, {
     foreignKey: 'type_id',

@@ -1,13 +1,15 @@
-const express = require('express');
-const bodyParser = require('body-parser');
+const express = require('express')
+const bodyParser = require('body-parser')
+const cors = require('cors')
+// const { Op } = require('sequelize')
 const app = express();
 
-const sequelize = require('./services/sequelize.js');
-const { User, Rental, Vehicle, VehicleType } = require('./models')
+const sequelize = require('./services/sequelize')
+const { User, Rental, Vehicle, VehicleType } = require('./models');
 
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(express.json())
-
+app.use(cors({ origin: 'http://localhost:3001' }))
 
 // User related requests
 
@@ -22,7 +24,8 @@ app.get('/user/:email/rentals', async (req, res) => {
 })
 
 app.post('/user/add', async (req, res) => {
-    res.send(await User.create(req.body))
+    const user = await User.create(req.body, { isNewRecord: true })
+    res.send(user)
 })
 
 
@@ -39,23 +42,55 @@ app.post('/rental/add', async (req, res) => {
 
 // VehicleType related requests
 
+app.get('/vehicletype/all', async (req, res) => {
+    res.send(await VehicleType.findAll())
+})
+
 app.post('/vehicletype/add', async (req, res) => {
     res.send(await VehicleType.create(req.body))
 })
 
 // Vehicle related requests
 
+app.get('/vehicle/all', async (req, res) => {
+    res.send(await Vehicle.findAll())
+})
+
+app.post('/vehicle/add', async (req, res) => {
+    const t = await sequelize.transaction()
+    try {
+        const response = await Vehicle.create(req.body, { transaction: t })
+        await VehicleType.increment('quantity', { where: { id: req.body.type }, transaction: t })
+        t.commit()
+        res.send(response)
+    }
+    catch (err) {
+        await t.rollback()
+        res.send(null)
+    }
+})
+
 app.get('/vehicle/:id', async (req, res) => {
     res.send(await Vehicle.findByPk(req.params.id))
 })
 
-app.get('/vehicle/all', async (req, res) => {
-    res.send(await Vehicle.findAndCountAll())
+app.delete('/vehicle/:id/delete', async (req, res) => {
+    const t = await sequelize.transaction()
+    try {
+        const response = await Vehicle.findOne({ where: { registrationNo: req.params.id } })
+        console.log(response)
+        await response.destroy()
+        await VehicleType.decrement('quantity', { where: { id: response.dataValues.type }, transaction: t })
+        t.commit()
+        res.send(true)
+    }
+    catch (err) {
+        console.log(err)
+        await t.rollback()
+        res.send(false)
+    }
 })
 
-app.post('/vehicle/add', async (req, res) => {
-    res.send(await Vehicle.create(req.body))
-})
 
 
 app.listen(3000, () => console.log("Started the server!"))
