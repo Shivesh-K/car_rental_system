@@ -9,7 +9,7 @@ const regex = {
     zipcode: /^\b[0-9]{6}(-[0-9]{4})?\b/g,
     brand: /^\b[a-z]+\b/i,
     model: /^\b[a-z\-0-9\ ]+\b/i,
-    registrationNo: /^\b[a-z]{2}[\ \-]?\d{2}[\ \-]?[a-z]{2}[\ \-]?[a-z0-9]{4}\b/i,
+    registrationNo: /^\b[a-z]{2}\-\d{2}\-?[a-z]{2}\?[a-z0-9]{4}\b/i,
     color: /([a-z]+\ ?)+/i
 }
 
