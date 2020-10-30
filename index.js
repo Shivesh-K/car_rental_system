@@ -1,7 +1,6 @@
 const express = require('express')
 const bodyParser = require('body-parser')
-const cors = require('cors')
-// const { Op } = require('sequelize')
+const path = require('path')
 const app = express();
 
 const sequelize = require('./services/sequelize')
@@ -9,7 +8,8 @@ const { User, Rental, Vehicle, VehicleType } = require('./models');
 
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(express.json())
-app.use(cors({ origin: 'http://localhost:3001' }))
+app.use(express.static(path.join(__dirname, './client/build')))
+
 
 // User related requests
 
@@ -26,6 +26,25 @@ app.get('/user/:email/rentals', async (req, res) => {
 app.post('/user/add', async (req, res) => {
     const user = await User.create(req.body, { isNewRecord: true })
     res.send(user)
+})
+
+app.post('/user/:email/update', async (req, res) => {
+    try {
+        console.log(req.body)
+        const [isUpdated] = await User.update(req.body, { where: { email: req.params.email } })
+        // console.log(x)/
+        if (isUpdated) {
+            const user = await User.findByPk(req.params.email)
+            res.send(user)
+        }
+        else {
+            res.send(null)
+        }
+        // res.send(updatedUser)
+    } catch (err) {
+        console.log(err)
+        res.send(null)
+    }
 })
 
 
@@ -91,6 +110,10 @@ app.delete('/vehicle/:id/delete', async (req, res) => {
     }
 })
 
+// For all the other requests
+app.get('*', (req, res) => {
+    res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'));
+})
 
-
-app.listen(3000, () => console.log("Started the server!"))
+const PORT = process.env.PORT || 3000
+app.listen(PORT, () => console.log("Started the server!"))

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import cookie from 'react-cookies'
 import { Redirect } from 'react-router-dom'
+import { Button, Container, Paper, TextField, Typography } from '@material-ui/core'
 
 import { signup } from '../helpers/auth'
 import { validateCity, validateContactNo, validateEmail, validateName, validateHouseNo, validatePassword, validateSreet, validateState, validateZipcode } from '../helpers/validation'
@@ -57,15 +58,9 @@ function Signup(props) {
             return
         }
 
-        const { isSignedUp, user } = await signup(state)
+        const { isSignedUp } = await signup(state)
 
         if (isSignedUp) {
-            console.log(props)
-            // setUser(() => user)
-            cookie.save('user', user, {
-                path: '/',
-                maxAge: 3600,
-            })
             setRedirect(() => '/home')
         }
     }
@@ -81,41 +76,144 @@ function Signup(props) {
                     }
                 }} />
             ) : (
-                <form>
-                    <label>Email</label>
-                    <input type="email" name="email" onChange={handleChange} value={state.email} />
-                    <br />
-                    <label >Password</label>
-                    <input type="password" name="password" onChange={handleChange} value={state.password} />
-                    <br />
-                    <label >First Name</label>
-                    <input type="text" name="firstName" onChange={handleChange} value={state.firstName} />
-                    <br />
-                    <label >Last Name</label>
-                    <input type="text" name="lastName" onChange={handleChange} value={state.lastName} />
-                    <br />
-                    <label >Contact Number</label>
-                    <input type="text" name="contactNo" onChange={handleChange} value={state.contactNo} />
-                    <br />
-                    <label >House Number</label>
-                    <input type="text" name="houseNo" onChange={handleChange} value={state.houseNo} />
-                    <br />
-                    <label >Street</label>
-                    <input type="text" name="street" onChange={handleChange} value={state.street} />
-                    <br />
-                    <label >City</label>
-                    <input type="text" name="city" onChange={handleChange} value={state.city} />
-                    <br />
-                    <label >State</label>
-                    <input type="text" name="state" onChange={handleChange} value={state.state} />
-                    <br />
-                    <label >ZIP</label>
-                    <input type="text" name="zipcode" onChange={handleChange} value={state.zipcode} />
-                    <br />
-                    {error && <h6>{error}</h6>}
-                    <br />
-                    <button type="submit" onClick={handleSubmit}>Login</button>
-                </form>
+                <Container
+                    style={{
+                        height: "100vh",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center"
+                    }}
+                >
+                    <Paper
+                        style={{
+                            padding: 16,
+                            width: "fit-content"
+                        }}
+                    >
+                        <Typography
+                            variant="h4"
+                            style={{
+                                marginBottom: 32,
+                                textAlign: "center"
+                            }}
+                        >
+                            Signup
+                        </Typography>
+                        <form>
+                            <Container>
+                                <TextField
+                                    label="Email"
+                                    name="email"
+                                    variant="outlined"
+                                    onChange={handleChange}
+                                    value={state.email}
+                                    style={{ margin: 8 }}
+                                />
+                                <TextField
+                                    label="Password"
+                                    name="password"
+                                    variant="outlined"
+                                    onChange={handleChange}
+                                    value={state.password}
+                                    style={{ margin: 8 }}
+                                />
+                            </Container>
+                            <Container>
+                                <TextField
+                                    label="First Name"
+                                    name="firstName"
+                                    variant="outlined"
+                                    onChange={handleChange}
+                                    value={state.firstName}
+                                    style={{ margin: 8 }}
+                                />
+                                <TextField
+                                    label="Last Name"
+                                    name="lastName"
+                                    variant="outlined"
+                                    onChange={handleChange}
+                                    value={state.lastName}
+                                    style={{ margin: 8 }}
+                                />
+                            </Container>
+                            <Container>
+                                <TextField
+                                    label="Contact Number"
+                                    name="contactNo"
+                                    variant="outlined"
+                                    onChange={handleChange}
+                                    value={state.contactNo}
+                                    style={{ margin: 8 }}
+                                />
+                            </Container>
+                            <Container>
+                                <TextField
+                                    label="House Number"
+                                    name="houseNo"
+                                    variant="outlined"
+                                    onChange={handleChange}
+                                    value={state.houseNo}
+                                    style={{ margin: 8 }}
+                                />
+                                <TextField
+                                    label="Street"
+                                    name="street"
+                                    variant="outlined"
+                                    onChange={handleChange}
+                                    value={state.street}
+                                    style={{ margin: 8 }}
+                                />
+                            </Container>
+                            <Container>
+                                <TextField
+                                    label="City"
+                                    name="city"
+                                    variant="outlined"
+                                    onChange={handleChange}
+                                    value={state.city}
+                                    style={{ margin: 8 }}
+                                />
+                                <TextField
+                                    label="State"
+                                    name="state"
+                                    variant="outlined"
+                                    onChange={handleChange}
+                                    value={state.state}
+                                    style={{ margin: 8 }}
+                                />
+                                <TextField
+                                    label="ZIP Code"
+                                    name="zipcode"
+                                    variant="outlined"
+                                    onChange={handleChange}
+                                    value={state.zipcode}
+                                    style={{ margin: 8 }}
+                                />
+                            </Container>
+                            <Container
+                                style={{
+                                    display: "flex",
+                                    justifyContent: "flex-end"
+                                }}
+                            >
+                                <Button
+                                    onClick={() => setRedirect('/login')}
+                                    style={{ margin: 8 }}
+                                >
+                                    Login
+                                </Button>
+                                <Button
+                                    type="submit"
+                                    variant="contained"
+                                    onClick={handleSubmit}
+                                    style={{ margin: 8 }}
+                                >
+                                    Submit
+                                </Button>
+                            </Container>
+                        </form>
+                    </Paper>
+                </Container>
             )
     )
 }

@@ -11,8 +11,8 @@ const getCar = async (registrationNo) => {
 const getAllCars = async () => {
     const response = await API.get('/vehicle/all')
     if (response.status === 200 && response.data) {
-        // console.log(response)
         const cars = response.data
+        console.log(cars)
         const [hatchback, sedan, suv] = [
             cars.filter(car => car.type === 1),
             cars.filter(car => car.type === 2),
@@ -25,8 +25,8 @@ const getAllCars = async () => {
 
 const getCarsData = async (registrationNos) => {
     try {
-        registrationNos = [...new Set(registrationNos)]
-        const promises = registrationNos.map(rn => getCar(rn))
+        const rns = [...new Set(registrationNos)]
+        const promises = rns.map(rn => getCar(rn))
         const result = await Promise.all(promises)
         return result
     }
@@ -69,4 +69,12 @@ const getRentalRates = async () => {
     }
 }
 
-export { getRentals, getAllCars, addCar, deleteCar, addRental, getCarsData, getRentalRates }
+const updateUser = async (newData) => {
+    const response = await API.post(`/user/${newData.email}/update`, newData)
+    if (response.status === 200 && response.data) {
+        return response.data
+    }
+    return null
+}
+
+export { getRentals, getAllCars, addCar, deleteCar, addRental, getCarsData, getRentalRates, updateUser }

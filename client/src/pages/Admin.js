@@ -1,39 +1,38 @@
-import React, { useEffect, useState } from 'react'
+import React, { Fragment, useEffect, useState } from 'react'
+import { Redirect } from 'react-router-dom'
+import { Container, Typography, Paper, TextField, FormControl, RadioGroup, Radio, FormControlLabel, Button, CircularProgress, List, ListItemSecondaryAction, ListItemText, ListItem, ListSubheader, IconButton, Divider } from '@material-ui/core'
+import { DeleteRounded } from '@material-ui/icons'
 
 import { addCar, deleteCar, getAllCars } from '../helpers/data'
 import { validateBrand, validateColor, validateModel, validateRegistrationNo, validateType } from '../helpers/validation'
+import CustomAppBar from '../components/AppBar'
 
-function Admin() {
+function Admin(props) {
 
     const [cars, setCars] = useState(() => null)
     const [formData, setFormData] = useState(() => ({
         brand: "",
         model: "",
         registrationNo: "",
-        type: 0,
+        type: 1,
         color: ""
     }))
+    const [redirect, setRedirect] = useState("")
 
     useEffect(() => {
         (async () => {
             const cars = await getAllCars()
-            console.log(cars)
-            // const [hatchback, sedan, suv] = [
-            //     cars.filter(car => car.type === 1),
-            //     cars.filter(car => car.type === 2),
-            //     cars.filter(car => car.type === 3),
-            // ]
             setCars(() => cars)
         })()
     }, [])
 
     const handleChange = e => {
         e.persist()
+        console.log(e)
         setFormData(curr => ({
             ...curr,
             [e.target.name]: e.target.value
         }))
-        console.log(formData)
     }
 
     const handleSubmit = async e => {
@@ -42,7 +41,7 @@ function Admin() {
         if (validateBrand(formData.brand)
             && validateModel(formData.model)
             && validateRegistrationNo(formData.registrationNo)
-            && validateType(formData.type)
+            && validateType(parseInt(formData.type))
             && validateColor(formData.color)
         ) { }
         else {
@@ -52,136 +51,158 @@ function Admin() {
 
         const newCar = await addCar(formData)
         console.log(newCar)
-        // if (newCar) {
-        //     if (newCar.type == '1') {
-        //         setCars(old => {
-        //             old.hatchback.push(newCar)
-        //             console.log(old)
-        //             return old
-        //         })
-        //     }
-        //     else if (newCar.type == '2') {
-        //         setCars(old => {
-        //             old.sedan.push(newCar)
-        //             return old
-        //         })
-        //     }
-        //     else if (newCar.type == '3') {
-        //         setCars(old => {
-        //             old.suv.push(newCar)
-        //             return old
-        //         })
-        //     }
-        // }
     }
 
-    const removeCar = async (registrationNo, type) => {
-        const isDeleted = await deleteCar(registrationNo)
-        // if (isDeleted) {
-        //     if (type === 1) {
-        //         setCars(old => {
-        //             old.hatchback.
-        //     })
-        //     }
-        // }
+    const removeCar = async (registrationNo) => {
+        if (await deleteCar(registrationNo)) {
+            window.location.reload()
+        }
+
     }
 
     return (
-        <div>
-            <h1>Admin</h1>
-            <ol>
-                <li>Hatchback</li>
-                {
-                    cars
-                        ? (
-                            cars.hatchback.length
+        redirect !== ''
+            ? (
+                <Redirect to={{
+                    pathname: redirect,
+                    state: { from: props.location }
+                }} />
+            ) : (
+                <Fragment>
+
+                    <CustomAppBar goHome={() => setRedirect('/home')} />
+
+                    <Container style={{ minHeight: "100vh", paddingTop: "4em" }}>
+                        <Typography variant="h3">Admin</Typography>
+
+                        <Paper variant="outlined" style={{ margin: 16, padding: 16, width: "fit-content" }}>
+                            <Typography variant="h5" style={{ margin: 8 }}>Add a new car</Typography>
+                            <form>
+                                <TextField
+                                    label="Brand"
+                                    type="text"
+                                    name="brand"
+                                    value={formData.brand}
+                                    onChange={handleChange}
+                                    variant="outlined"
+                                    style={{ margin: 8, }}
+                                />
+
+                                <TextField
+                                    label="Model"
+                                    type="text"
+                                    name="model"
+                                    value={formData.model}
+                                    onChange={handleChange}
+                                    variant="outlined"
+                                    style={{ margin: 8 }}
+                                />
+
+                                <TextField
+                                    label="Registration Number"
+                                    type="text"
+                                    placeholder="RJ-01-FC-3934"
+                                    name="registrationNo"
+                                    value={formData.registrationNo}
+                                    onChange={handleChange}
+                                    variant="outlined"
+                                    style={{ margin: 8 }}
+                                />
+
+                                <FormControl component="fieldset" style={{ margin: 8, display: "block" }}>
+                                    <RadioGroup name="type" value={parseInt(formData.type)} style={{ display: "inline" }} >
+                                        <FormControlLabel
+                                            key="hatchback"
+                                            value={1}
+                                            control={<Radio />}
+                                            label={<Typography>Hatchback</Typography>}
+                                            onClick={handleChange}
+                                        />
+                                        <FormControlLabel
+                                            key="sedan"
+                                            value={2}
+                                            control={<Radio />}
+                                            label={<Typography>Sedan</Typography>}
+                                            onClick={handleChange}
+                                        />
+                                        <FormControlLabel
+                                            key="suv"
+                                            value={3}
+                                            control={<Radio />}
+                                            label={<Typography>SUV</Typography>}
+                                            onClick={handleChange}
+                                        />
+                                    </RadioGroup>
+                                </FormControl>
+
+                                <TextField
+                                    label="Color"
+                                    type="text"
+                                    name="color"
+                                    value={formData.color}
+                                    onChange={handleChange}
+                                    variant="outlined"
+                                    style={{ margin: 8 }}
+                                />
+
+                                <Button
+                                    variant="contained"
+                                    type="submit"
+                                    onClick={handleSubmit}
+                                    style={{ margin: 8, marginLeft: "auto", marginRight: "auto", display: "block", }}
+                                >
+                                    Submit
+                                </Button>
+                            </form>
+                        </Paper>
+
+                        <Typography variant="h5" style={{ marginTop: 32 }}>Car List</Typography>
+                        {
+                            cars
                                 ? (
-                                    <ul>
-                                        {cars.hatchback.map(car =>
-                                            <li key={car.registrationNo} >
-                                                {`${car.brand} ${car.model} - ${car.type}`}
-                                                <button onClick={() => removeCar(car.registrationNo, 1)}>Remove</button>
-                                            </li>
-                                        )}
-                                    </ul>
+                                    <List subheader={<li />} dense={true}>
+                                        {
+                                            Object.keys(cars).map(key => {
+                                                if (cars[key].length) {
+                                                    return (
+                                                        (
+                                                            <li key={key}>
+                                                                <ul>
+                                                                    <ListSubheader>{key.toUpperCase()}</ListSubheader>
+                                                                    {
+                                                                        cars[key].map(car => (
+                                                                            <ListItem key={car.registrationNo}>
+                                                                                <ListItemText
+                                                                                    primary={`${car.brand} ${car.model}`}
+                                                                                    secondary={`${car.registrationNo} | ${car.color}`}
+                                                                                />
+                                                                                <ListItemSecondaryAction>
+                                                                                    <IconButton onClick={() => removeCar(car.registrationNo)}>
+                                                                                        <DeleteRounded />
+                                                                                    </IconButton>
+                                                                                </ListItemSecondaryAction>
+                                                                            </ListItem>
+                                                                        ))
+                                                                    }
+                                                                </ul>
+                                                                <Divider />
+                                                            </li>
+                                                        )
+                                                    )
+                                                }
+                                            })
+                                        }
+                                    </List>
                                 ) : (
-                                    <p>No hatchbacks avilable right now!</p>
+                                    <Container style={{ display: "flex", flexDirection: "row", justifyContent: "center" }}>
+                                        <CircularProgress />
+                                    </Container>
                                 )
-                        ) : (
-                            <p>Loading...</p>
-                        )
-                }
-                <li>Sedan</li>
-                {
-                    cars
-                        ? (
-                            cars.sedan.length
-                                ? (
-                                    <ul>
-                                        {cars.sedan.map(car =>
-                                            <li key={car.registrationNo} >
-                                                {`${car.brand} ${car.model} - ${car.type}`}
-                                                <button onClick={() => removeCar(car.registrationNo, 2)}>Remove</button>
-                                            </li>
-                                        )}
-                                    </ul>
-                                ) : (
-                                    <p>No sedans avilable!</p>
-                                )
+                        }
 
-                        ) : (
-                            <p>Loading...</p>
-                        )
-                }
-                <li>SUV</li>
-                {
-                    cars
-                        ? (
-                            cars.suv.length
-                                ? (
-                                    <ul>
-                                        {cars.suv.map(car =>
-                                            <li key={car.registrationNo} >
-                                                {`${car.brand} ${car.model} - ${car.type}`}
-                                                <button onClick={() => removeCar(car.registrationNo, 3)}>Remove</button>
-                                            </li>
-                                        )}
-                                    </ul>
-                                ) : (
-                                    <p>No SUVs avilable right now!</p>
-                                )
-                        ) : (
-                            <p>Loading...</p>
-                        )
-                }
-            </ol>
-
-            <h3>Add a new car</h3>
-            <form>
-                <label>Brand: </label>
-                <input type="text" name="brand" value={formData.brand} onChange={handleChange} />
-
-                <label>Model: </label>
-                <input type="text" name="model" value={formData.model} onChange={handleChange} />
-
-                <label>Registration Number: </label>
-                <input type="text" name="registrationNo" value={formData.registrationNo} onChange={handleChange} />
-
-                <label>Type</label>
-                <input type="radio" id="hatchback" name="type" value={1} onClick={handleChange} />
-                <label htmlFor="hatchback">Male</label><br />
-                <input type="radio" id="sedan" name="type" value={2} onClick={handleChange} />
-                <label htmlFor="sedan">Female</label><br />
-                <input type="radio" id="suv" name="type" value={3} onClick={handleChange} />
-                <label htmlFor="suv">Other</label>
-                {/* <input type="" /> */}
-
-                <label>Color: </label>
-                <input type="text" name="color" value={formData.color} onChange={handleChange} />
-
-                <button type="submit" onClick={handleSubmit} >Submit</button>
-            </form>
-        </div>
+                    </Container>
+                </Fragment>
+            )
     )
 }
 
