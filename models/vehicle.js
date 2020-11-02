@@ -31,6 +31,10 @@ const Vehicle = sequelize.define('Vehicle', {
     color: {
         type: DataTypes.STRING,
         field: 'color'
+    },
+    isAvailable: {
+        type: DataTypes.BOOLEAN,
+        field: 'is_available'
     }
 }, {
     tableName: 'vehicles'

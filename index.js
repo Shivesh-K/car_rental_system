@@ -97,8 +97,7 @@ app.delete('/vehicle/:id/delete', async (req, res) => {
     const t = await sequelize.transaction()
     try {
         const response = await Vehicle.findOne({ where: { registrationNo: req.params.id } })
-        console.log(response)
-        await response.destroy()
+        await response.update({ isAvailable: false }, { transaction: t })
         await VehicleType.decrement('quantity', { where: { id: response.dataValues.type }, transaction: t })
         t.commit()
         res.send(true)
