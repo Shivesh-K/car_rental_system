@@ -61,7 +61,7 @@ function NewRental(props) {
                 const value = cars[key]
                 var radios = []
                 value.forEach(element => {
-                    radios.push(
+                    element.isAvailable && radios.push(
                         <FormControlLabel
                             key={element.registrationNo}
                             value={element.registrationNo}

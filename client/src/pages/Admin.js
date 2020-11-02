@@ -21,7 +21,10 @@ function Admin(props) {
 
     useEffect(() => {
         (async () => {
-            const cars = await getAllCars()
+            var cars = await getAllCars()
+            Object.keys(cars).forEach(key => {
+                cars[key] = (cars[key]).filter(car => car.isAvailable)
+            })
             setCars(() => cars)
         })()
     }, [])
@@ -168,7 +171,7 @@ function Admin(props) {
                                                         (
                                                             <li key={key}>
                                                                 <ul>
-                                                                    <ListSubheader>{key.toUpperCase()}</ListSubheader>
+                                                                    <ListSubheader>{`${key.toUpperCase()} • ${cars[key].length}`}</ListSubheader>
                                                                     {
                                                                         cars[key].map(car => (
                                                                             <ListItem key={car.registrationNo}>

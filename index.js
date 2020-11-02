@@ -96,10 +96,14 @@ app.get('/vehicle/:id', async (req, res) => {
 app.delete('/vehicle/:id/delete', async (req, res) => {
     const t = await sequelize.transaction()
     try {
-        const response = await Vehicle.findOne({ where: { registrationNo: req.params.id } })
+        const response = await Vehicle.update(
+            { isAvailable: false },
+            { where: { registrationNo: req.params.id }, transaction: t }
+        )
         console.log(response)
-        await response.destroy()
-        await VehicleType.decrement('quantity', { where: { id: response.dataValues.type }, transaction: t })
+        // await response.update({ isAvailable: false })
+        // console.log(x)
+        // await VehicleType.decrement('quantity', { where: { id: response.dataValues.type }, transaction: t })
         t.commit()
         res.send(true)
     }
