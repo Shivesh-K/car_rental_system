@@ -78,7 +78,10 @@ app.get('/vehicle/all', async (req, res) => {
 app.post('/vehicle/add', async (req, res) => {
     const t = await sequelize.transaction()
     try {
-        const response = await Vehicle.create(req.body, { transaction: t })
+        const [user, created] = await Vehicle.findOrCreate({ where: req.body, transaction: t })
+        if (!created) {
+            await user.update({ isAvailable: true }, { transaction: t })
+        }
         await VehicleType.increment('quantity', { where: { id: req.body.type }, transaction: t })
         t.commit()
         res.send(response)
