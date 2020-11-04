@@ -53,7 +53,7 @@ function Profile(props) {
         ) : (
                 <Fragment>
                     <CustomAppBar goHome={() => setRedirect('/home')} />
-                    <Container style={{ height: "100vh", position: "fixed" }}>
+                    <Container style={{ minHeight: "100vh", display: "contents", position: "fixed" }}>
 
                         <Typography
                             variant="h3"
@@ -63,7 +63,7 @@ function Profile(props) {
                         >
                             {`${user.firstName} ${user.lastName}`}
                         </Typography>
-                        <Typography variant="body1">{`${user.email} | ${user.contactNo}`}</Typography>
+                        <Typography variant="body1">{`${user.email}  •  ${user.contactNo}`}</Typography>
 
                         {user.isAdmin && <Button onClick={() => setRedirect('/admin')}>Admin</Button>}
                         <Button
@@ -85,7 +85,7 @@ function Profile(props) {
                                     rentals.length > 0
                                         ? (
                                             <TableContainer component={Paper}>
-                                                <Table>
+                                                <Table stickyHeader >
                                                     <TableHead>
                                                         <TableRow>
                                                             <TableCell style={{ fontWeight: "bold" }}>Name</TableCell>

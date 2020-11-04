@@ -53,7 +53,7 @@ function Admin(props) {
         }
 
         const newCar = await addCar(formData)
-        console.log(newCar)
+        if (newCar) window.location.reload()
     }
 
     const removeCar = async (registrationNo) => {
